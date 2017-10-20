@@ -1,6 +1,10 @@
 property APP_NAME : "zip_with_password"
 property ARCHIVE_NAME : "archive.zip"
+property DROPPED_FILES : {}
 
+on clearDroppedFiles()
+    set DROPPED_FILES to {}
+end clearDroppedFiles
 
 on makeTmpDir()
 	return do shell script ("mktemp -d /tmp/" & APP_NAME & ".XXXXXXXX")
@@ -50,31 +54,41 @@ end getPassword
 
 
 on open theList
-
-	set thePassword to getPassword()
-
-	set theTmpPath to makeTmpDir() & "/"
-	-- display dialog (theTmpPath)
-
-	repeat with theTarget in theList
-		set thePath to removeTrailingSlash(POSIX path of (theTarget as string))
-		set theSrc to escapeSpace(thePath)
-		do shell script ("cp -rp " & theSrc & " " & theTmpPath)
-	end repeat
-
-
-	set theTargetDirPath to chooseTargetPath()
-	set theTargetPath to escapeSpace(theTargetDirPath) & ARCHIVE_NAME
-
-	set theExcludePath to getExcludePath()
-	set theCmd to "zip -r " & theTargetPath & " * -x@" & theExcludePath
-	if (thePassword is not equal to "") then
-		set theCmd to theCmd & " -P " & thePassword
-	end if
-
-	do shell script ("rm -rf " & theTargetPath & " 2>/dev/null")
-	do shell script ("cd " & theTmpPath & " && " & theCmd)
-
-	deleteTmpDir()
-
+    deleteTmpDir()
+    set DROPPED_FILES to DROPPED_FILES & theList
 end open
+
+on quit
+    try
+        set thePassword to getPassword()
+        set theTmpPath to makeTmpDir() & "/"
+
+        repeat with theTarget in DROPPED_FILES
+            set thePath to removeTrailingSlash(POSIX path of (theTarget as string))
+            set theSrc to escapeSpace(thePath)
+            do shell script ("cp -rp " & theSrc & " " & theTmpPath)
+        end repeat
+
+        set theTargetDirPath to chooseTargetPath()
+        set theTargetPath to escapeSpace(theTargetDirPath) & ARCHIVE_NAME
+
+        set theExcludePath to getExcludePath()
+        set theCmd to "zip -r " & theTargetPath & " * -x@" & theExcludePath
+        if (thePassword is not equal to "") then
+            set theCmd to theCmd & " -P " & thePassword
+        end if
+
+        do shell script ("rm -rf " & theTargetPath & " 2>/dev/null")
+        do shell script ("cd " & theTmpPath & " && " & theCmd)
+
+        deleteTmpDir()
+
+    on error
+        clearDroppedFiles()
+    end try
+
+    clearDroppedFiles()
+
+    continue quit
+
+end quit
