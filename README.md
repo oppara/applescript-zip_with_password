@@ -26,3 +26,26 @@ $ mv zip_with_password.app  /Applications/
 7. `command + s` で、適当な名前（例：Zip with password）で保存。
 ![context_menu](./assets/context_menu.png)
 
+
+## 最近の Gatekeeper 対応
+
+リリースページから zip ファイルをダウンロードした場合、Gatekeeper に引っかかるので対応
+
+### ダウンロード時
+
+zip_with_password.zip ダウンロード時に以下のエラーの場合は、赤枠内をクリックして、「継続」をクリック。
+![download](./assets/download.png)
+
+### 初回起動時
+
+アプリを起動しようとすると「開発元を検証できないため開けません」エラーが発生。
+![download](./assets/alert01.png)
+
+このアラートが出たら「キャンセル」をクリックし、「システム環境設定」の「セキュリティとプライバシー」を開く。<br>
+すると、画面下部に「このまま開く」というボタンが出ているので、これをクリック。
+![download](./assets/system.png)
+
+
+再度、アプリを起動すると「開いてもよろしいですか？」という画面が出るので「開く」をクリック。
+![download](./assets/alert02.png)
+
