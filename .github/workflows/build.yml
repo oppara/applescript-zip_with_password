@@ -1,4 +1,4 @@
-name: build app
+name: release
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 jobs:
-  build:
+  release:
     runs-on: macos-latest
     timeout-minutes: 3
     steps:
@@ -35,7 +35,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: zip_with_password.app.zip
-          asset_name: zip_with_password.app.zip
+          asset_path: zip_with_password.zip
+          asset_name: zip_with_password.zip
           asset_content_type: application/zip
 
